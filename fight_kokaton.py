@@ -133,6 +133,11 @@ class Explosion:
     """
     爆弾の爆発に関するクラス
     """
+
+    """
+    imgを上下左右反転させ４枚用意する
+    lifeを設定する
+    """
     def __init__(self, bomb: Bomb):
         self.img = pg.image.load(f"{MAIN_DIR}/fig/explosion.gif")
         self.imgs = [
