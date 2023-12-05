@@ -126,6 +126,28 @@ class Bomb:
         screen.blit(self.img, self.rct)
 
 
+class Explosion:
+    """
+    爆弾の爆発に関するクラス
+    """
+    def __init__(self, bomb: Bomb):
+        self.img = pg.image.load(f"{MAIN_DIR}/fig/explosion.gif")
+        self.imgs = [
+            pg.transform.flip(self.img, True, True),
+            pg.transform.flip(self.img, True, False),
+            pg.transform.flip(self.img, False, True),
+            pg.transform.flip(self.img, False, False)
+        ]
+        self.rct = self.img.get_rect()
+        self.rct = bomb.rct.center
+        self.life = 60
+
+    def update(self, screen: pg.Surface):
+        self.life -= 1
+        self.img = self.imgs[self.life%4]
+        screen.blit(self.img, self.rct)
+
+
 class Beam:
     def __init__(self, bird: Bird):
         self.img = pg.image.load(f"{MAIN_DIR}/fig/beam.png")
@@ -146,9 +168,11 @@ def main():
     bird = Bird(3, (900, 400))
     bombs = [Bomb() for _ in range(NUM_OF_BOMBS)]
     beam = None
+    explosions = list()
 
     clock = pg.time.Clock()
     tmr = 0
+
     while True:
         for event in pg.event.get():
             if event.type == pg.QUIT:
@@ -167,11 +191,15 @@ def main():
                 return
         for i, bomb in enumerate(bombs):
             if beam is not None and beam.rct.colliderect(bomb.rct):
+                explosions.append(Explosion(bombs[i]))
                 beam = None
                 bombs[i] = None
                 bird.change_img(6, screen)
+                
         
         bombs = [bomb for bomb in bombs if bomb is not None]
+        if explosions is not None:
+            explosions = [ex for ex in explosions if ex.life != 0]
 
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
@@ -179,6 +207,9 @@ def main():
             bomb.update(screen)
         if beam is not None:  #beamが存在するとき
             beam.update(screen)
+        if explosions is not None:
+            for ex in explosions:
+                ex.update(screen)
 
         pg.display.update()
         tmr += 1
