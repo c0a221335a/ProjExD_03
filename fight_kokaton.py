@@ -122,12 +122,25 @@ class Bomb:
         screen.blit(self.img, self.rct)
 
 
+class Beam:
+    def __init__(self, bird: Bird):
+        self.img = pg.image.load(f"{MAIN_DIR}/fig/beam.png")
+        self.rct = self.img.get_rect()
+        self.rct.center = bird.rct.center
+        self.vx, self.vy = +5, 0
+
+    def update(self, screen: pg.Surface):
+        self.rct.move_ip(self.vx, self.vy)
+        screen.blit(self.img, self.rct)
+
+
 def main():
     pg.display.set_caption("たたかえ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))    
     bg_img = pg.image.load(f"{MAIN_DIR}/fig/pg_bg.jpg")
     bird = Bird(3, (900, 400))
     bomb = Bomb((255, 0, 0), 10)
+    beam = None
 
     clock = pg.time.Clock()
     tmr = 0
@@ -135,6 +148,8 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT:
                 return
+            if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:  #スペースキーが押されたらビームを生成
+                beam = Beam(bird)
         
         screen.blit(bg_img, [0, 0])
         
@@ -148,6 +163,9 @@ def main():
         key_lst = pg.key.get_pressed()
         bird.update(key_lst, screen)
         bomb.update(screen)
+        if beam is not None:
+            beam.update(screen)
+
         pg.display.update()
         tmr += 1
         clock.tick(50)
