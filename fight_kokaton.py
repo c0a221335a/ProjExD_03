@@ -223,7 +223,7 @@ def main():
                     score.score += 1
                 
         
-        bombs = [bomb for bomb in bombs if bomb is not None]
+        bombs = [bomb for bomb in bombs if bomb is not None]  #bomb がNone ではないものをリストに格納
         if explosions is not None:
             explosions = [ex for ex in explosions if ex.life != 0]
 
@@ -242,7 +242,6 @@ def main():
             for ex in explosions:
                 ex.update(screen)
         score.update(screen)
-        print(len(beams))
 
         pg.display.update()
         tmr += 1
